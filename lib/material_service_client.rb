@@ -74,9 +74,6 @@ module MaterialServiceClient
 		end
 
 		def self.where(data)
-
-
-
 			JSON.parse(connection.get('/containers'+ MaterialServiceClient::criteria_to_params(data)).body)
 		end
 
