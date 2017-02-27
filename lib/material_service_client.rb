@@ -73,6 +73,23 @@ module MaterialServiceClient
 			JSON.parse(connection.put('/containers/'+uuid, data_to_send.to_json).body)
 		end
 
+		def self.where(data)
+			@criteria = {} unless @criteria.nil?
+			@criteria.merge!(data)
+			self
+		end
+
+		def self.sort(data)
+			@criteria = {} unless @criteria.nil?
+			@criteria.merge!(data)
+			self			
+		end
+
+		def self.each(&block)
+			# For lazy evaluation of where and sort
+			JSON.parse(connection.get('/containers', @criteria.to_json).body).each(&block)
+		end
+
 		def self.get(uuid)
 			return nil if uuid.nil?
 			JSON.parse(connection.get('/containers/'+uuid).body)
