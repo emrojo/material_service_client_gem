@@ -74,20 +74,20 @@ module MaterialServiceClient
 		end
 
 		def self.where(data)
-			@criteria = {} unless @criteria.nil?
-			@criteria.merge!(data)
+			@criteria = {} unless @criteria
+			@criteria[:where].merge!(data)
 			self
 		end
 
 		def self.sort(data)
-			@criteria = {} unless @criteria.nil?
-			@criteria.merge!(data)
+			@criteria = {} unless @criteria
+			@criteria[:sort].merge!(data)
 			self			
 		end
 
 		def self.each(&block)
 			# For lazy evaluation of where and sort
-			JSON.parse(connection.get('/containers', @criteria.to_json).body).each(&block)
+			JSON.parse(connection.get('/containers', lazy_evaluation_criteria_to_params(@criteria)).body).each(&block)
 		end
 
 		def self.get(uuid)
@@ -99,6 +99,12 @@ module MaterialServiceClient
 			return nil if uuid.nil?
 			connection.delete('/containers/'+uuid)
 		end
+	end
+
+	def lazy_evaluation_criteria_to_params(criteria)
+		'?'+criteria.map do |k, value|
+			"#{k.to_s}=#{value_to_json}"
+		end.join('&')
 	end
 
 end
